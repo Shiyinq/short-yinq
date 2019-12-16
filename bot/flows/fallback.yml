@@ -1,0 +1,20 @@
+active: true
+fallback: true
+intents:
+  defaultIntent:
+    type: text
+    initial: false
+    fallback: true
+states:
+  init:
+    transitions:
+      init:
+        fallback: true
+    action: sayDontUnderstand
+    initial: true
+    end: true
+actions:
+  sayDontUnderstand:
+      type: text
+      options:
+          text: 'Maaf saya belum mengerti :('

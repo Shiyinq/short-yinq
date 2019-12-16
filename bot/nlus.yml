@@ -1,0 +1,7 @@
+nlu:
+  type: nl
+  options:
+    nluId: ''
+    threshold: 0.5
+    output: value
+    flatten: true

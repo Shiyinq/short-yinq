@@ -1,30 +1,10 @@
 name: short-yinq-bot
-tag: latest
+tag: null
 deleted_at: null
 desc: short-yinq-bot
 flows:
-    default:
-        active: true
-        fallback: true
-        intents:
-            defaultIntent:
-                type: text
-                initial: false
-                fallback: true
-        states:
-            init:
-                transitions:
-                    init:
-                        fallback: true
-                action: sayDontUnderstand
-                initial: true
-                end: true
-        actions:
-            sayDontUnderstand:
-                type: text
-                options:
-                    text: 'Maaf saya belum mengerti :('
-        methods: {}
-nlus: {}
-methods: {}
-config: {}
+    shortener: $include(flows/shortener.yml)
+    fallback: $include(flows/fallback.yml)
+nlus: $include(nlus.yml)
+config:
+    maxRecursion: 10
