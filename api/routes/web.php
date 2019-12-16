@@ -33,13 +33,18 @@ $router->group(['prefix' => 'api/v1/'], function () use ($router) {
 
 	$router->post('/shortyinq', [
 		'as' => 'short-link', 
-		'uses' => 'ShortYinqController@automaticShortLink'
+		'uses' => 'ShortYinqController@automaticShortenerURL'
 		]
 	);
 
 	// after login
 	$router->group(['middleware' => 'auth'], function () use ($router) {
-
+		$router->post('/shortyinq/custom', [
+			'as' => 'short-link-custom', 
+			'uses' => 'ShortYinqController@customShortenerURL'
+			]
+		);
+		
 	});
 
 });
