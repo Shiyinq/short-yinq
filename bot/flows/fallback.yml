@@ -15,6 +15,6 @@ states:
     end: true
 actions:
   sayDontUnderstand:
-      type: text
-      options:
-          text: 'Maaf saya belum mengerti :('
+    type: text
+    options:
+        text: 'Please enter valid url'

@@ -1,22 +1,76 @@
 intents:
-  intent_test:
+  reenter:
+    type: command
+    condition: content == "reenter"
+
+  intent_hit_api:
+    type: command
+    condition: "content == 'hit_api'"
+
+  intent_url:
     initial: true
-    type: "text"
-    condition: "content == 'test'"
+    type: text
+    classifier:
+      nlu: url
+    attributes:
+      url:
+        nlu: url
+
 states: 
   state_initial:
     initial: true
     transitions:
-      state_test:
-        condition: "intent == 'intent_test'"
-  state_test:
+      stat_hit_api:
+        condition: "intent == 'intent_url'"
+
+  stat_hit_api:
+    action:
+      - name: act_hit_api
+      - name: command
+        options:
+          command: hit_api
+          payload:
+            result: $(result.message)
+    transitions:
+      state_shortener:
+        condition: payload.result
+      state_error:
+        fallback: true
+
+  state_shortener:
     end: true
     action:
-      - name: "act_test"
+      - name: 'act_result1'
+      - name: "act_result2"
+  
+  state_error:
+    end: true
+    action:
+      - name: "act_error"
+
 actions:
-  act_test:
+  act_hit_api:
+    type: api
+    options:
+      method: POST
+      body:
+        url: $(attributes.url)
+      uri: "$(config.urlAPI)/shortyinq"
+
+  act_result1:
     type: "text"
     options:
       text:
-        - "Hello"
-        - "Test"
+        - "This is the result"
+
+  act_result2:
+    type: "text"
+    options:
+      text:
+        - "$(payload.result)"
+
+  act_error:
+    type: "text"
+    options:
+      text:
+        - "Error. Try Again"

@@ -7,5 +7,5 @@ flows:
     fallback: $include(flows/fallback.yml)
 nlus: $include(nlus.yml)
 config:
-    urlAPI: 'localhost:3000/api/v1'
+    urlAPI: 'https://b5844bfd.ngrok.io/api/v1'
     maxRecursion: 10
