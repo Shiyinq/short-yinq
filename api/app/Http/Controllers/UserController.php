@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use \App\Models\User;
+use \Firebase\JWT\JWT;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -42,7 +43,7 @@ class UserController extends Controller
     ];
   }
 
-  public function login(Requesst $req)
+  public function login(Request $req)
   {
     $this->validate($req, [
       'username'=> 'required',
@@ -51,7 +52,18 @@ class UserController extends Controller
 
     $username = $req->input("username");
     $password = $req->input("password");
-    
+
+    try {
+      $user = User::where('username', $username)->first();
+      if(!empty($user->password) && password_verify($password, $user->password)) {
+        return response()->json($this->response(true,$this->createToken($username)));
+      }else {
+        return response()->json($this->response(false,"Username Or Password Failed"));
+      }
+    } catch (\Throwable $th) {
+      return response()->json($this->response(false,$th->errorInfo));
+    }   
+
   }
 
   public function register(Request $req)
@@ -71,9 +83,61 @@ class UserController extends Controller
       
       return response()->json($this->response(true,"Register success"));
     } catch (\Throwable $th) {
-      return response()->json($this->response(true,$th->errorInfo));
+      return response()->json($this->response(false,$th->errorInfo));
     }
 
+  }
+
+    /**
+   * Who.
+   * 
+   * @param \Illuminate\Http\Request $request
+   */
+  public function me(Request $request)
+  {
+    return $request->user();
+  }
+
+  /**
+   * Refresh token.
+   * 
+   * @param \Illuminate\Http\Request $request
+   */
+  public function refresh(Request $request) 
+  {
+    $user = $request->user();
+
+    return $this->createToken($user->username);
+  }
+
+  /**
+   * Generate token.
+   * 
+   * @param string $username
+   * @return string JWT token
+   */
+  private function createToken($username) 
+  {
+    $expired_in = \DateInterval::createfromdatestring('+14 day');
+    $refresh_in = \DateInterval::createfromdatestring('+7 day');
+    $dt = new \DateTime();
+
+    $expired = $dt->add($expired_in)->format('U');
+    $refresh = $dt->add($refresh_in)->format('U');
+
+    $jwt = JWT::encode([
+      'iss' => env('APP_NAME'),
+      'aud' => 'short-yinq-yiyi',
+      'exp' => $expired,          // expired after
+      'nbf' => time(),            // not used before
+      'usr' => $username,         // username
+    ], env('JWT_KEY'));
+
+    return [
+      'token' => $jwt,
+      'expired' => $expired,
+      'refresh' => $refresh,
+    ];
   }
 
 }

@@ -15,9 +15,19 @@ $router->get('/', function () use ($router) {
   return $router->app->version();
 });
 
+$router->post('/login', [
+	'as' => 'login',
+	'uses' => 'UserController@login'
+]);
+
 $router->post('/register', [
 	'as' => 'register', 
-	'uses' => 'UserController@register'
+	'uses' => 'UserController@register'	
+]);
+
+$router->post('/shortyinq', [
+	'as' => 'short-link', 
+	'uses' => 'ShortYinqController@automaticShortLink'
 	]
 );
 
@@ -25,8 +35,3 @@ $router->get('/{url}', [
 	'as' => 'redirect',
 	'uses' => 'ShortYinqController@redirectLink'
 ]);
-$router->post('/shortyinq', [
-	'as' => 'short-link', 
-	'uses' => 'ShortYinqController@automaticShortLink'
-	]
-);
