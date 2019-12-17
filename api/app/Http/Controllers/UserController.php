@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use \App\Models\User;
+use \App\Models\Link;
 use \Firebase\JWT\JWT;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -78,6 +79,18 @@ class UserController extends Controller
       return response()->json(["error" => "Register failed"],400);
     }
 
+  }
+
+  public function listURL(Request $req)
+  {
+    $userId = $req->user()->id;
+    
+    try {
+      $urls = Link::where('userId', $userId)->get();
+      return response()->json($urls);
+    } catch (\Throwable $th) {
+      return response()->json(["error" => "Failed get data"],400);
+    }
   }
 
   public function me(Request $request)
