@@ -35,14 +35,6 @@ class UserController extends Controller
     ]);
   }
 
-  private function response($success, $message)
-  {
-    return [
-      "success" => $success,
-      "message" => $message
-    ];
-  }
-
   public function login(Request $req)
   {
     $this->validate($req, [
@@ -56,12 +48,12 @@ class UserController extends Controller
     try {
       $user = User::where('username', $username)->first();
       if(!empty($user->password) && password_verify($password, $user->password)) {
-        return response()->json($this->response(true,$this->createToken($username)));
+        return response()->json(["message" => $this->createToken($username)],200);
       }else {
-        return response()->json($this->response(false,"Username Or Password Failed"));
+        return response()->json(["error" => "Username Or Password Failed"],400);
       }
     } catch (\Throwable $th) {
-      return response()->json($this->response(false,$th->errorInfo));
+      return response()->json(["error" => "Login failed"],400);
     }   
 
   }
@@ -81,28 +73,18 @@ class UserController extends Controller
       $user->password = password_hash($password, PASSWORD_BCRYPT, ['cost' => 14]);
       $user->save();
       
-      return response()->json($this->response(true,"Register success"));
+      return response()->json(["message" => "Register success"],201);
     } catch (\Throwable $th) {
-      return response()->json($this->response(false,$th->errorInfo));
+      return response()->json(["error" => "Register failed"],400);
     }
 
   }
 
-    /**
-   * Who.
-   * 
-   * @param \Illuminate\Http\Request $request
-   */
   public function me(Request $request)
   {
     return $request->user();
   }
 
-  /**
-   * Refresh token.
-   * 
-   * @param \Illuminate\Http\Request $request
-   */
   public function refresh(Request $request) 
   {
     $user = $request->user();
@@ -110,12 +92,6 @@ class UserController extends Controller
     return $this->createToken($user->username);
   }
 
-  /**
-   * Generate token.
-   * 
-   * @param string $username
-   * @return string JWT token
-   */
   private function createToken($username) 
   {
     $expired_in = \DateInterval::createfromdatestring('+14 day');

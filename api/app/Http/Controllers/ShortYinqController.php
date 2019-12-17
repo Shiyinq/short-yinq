@@ -27,7 +27,7 @@ class ShortYinqController extends Controller
 			$realURL = $this->countHit($idURL);
 			return redirect($realURL);
 		} catch (\Throwable $th) {
-			return response()->json($this->response(false, $th));	
+			return response()->json(["error" => "URL Not Found"],404);	
 		}
 	}
 
@@ -45,10 +45,10 @@ class ShortYinqController extends Controller
 		];
 
 		try {
-			$this->saveURL($data);
-			return response()->json($this->response(true, $this->domain().$idURL));		
+			$this->createURL($data);
+			return response()->json(["url" => $this->domain().$idURL],201);		
 		} catch (\Throwable $th) {
-			return response()->json($this->response(false, $th->errorInfo));		
+			return response()->json(["error" => "Can't create url"],400);		
 		}
 	}
 	
@@ -68,9 +68,9 @@ class ShortYinqController extends Controller
 
 		try {
 			$this->updateURL($existIdURL, $customURL);
-			return response()->json($this->response(true, $this->domain().$customURL));		
+			return response()->json(["url" => $this->domain().$customURL],201);		
 		} catch (\Throwable $th) {
-			return response()->json($this->response(false, $th));		
+			return response()->json(["error" => "Can't create url"],400);		
 		}
 	}
 
@@ -100,7 +100,7 @@ class ShortYinqController extends Controller
 		$l->save();
 	}
 
-	private function saveURL($data)
+	private function createURL($data)
 	{
 		$link = new Link;
 		$link->userId = $data["userId"];
@@ -109,14 +109,6 @@ class ShortYinqController extends Controller
 		$link->countHit = $data["hit"];
 		$link->status = $data["status"];
 		$link->save();
-	}
-
-	private function response($success, $message)
-  {
-    return [
-      "success" => $success,
-      "message" => $message
-    ];
 	}
 
 }
