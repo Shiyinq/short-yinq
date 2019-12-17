@@ -81,18 +81,6 @@ class UserController extends Controller
 
   }
 
-  public function listURL(Request $req)
-  {
-    $userId = $req->user()->id;
-    
-    try {
-      $urls = Link::where('userId', $userId)->get();
-      return response()->json($urls);
-    } catch (\Throwable $th) {
-      return response()->json(["error" => "Failed get data"],400);
-    }
-  }
-
   public function me(Request $request)
   {
     return $request->user();

@@ -92,7 +92,19 @@ class ShortYinqController extends Controller
 
 		return $l->realURL;
 	}
+	
+	public function listURL(Request $req)
+	{
+		$userId = $req->user()->id;
 
+		try {
+			$urls = Link::where('userId', $userId)->get();
+			return response()->json($urls);
+		} catch (\Throwable $th) {
+			return response()->json(["error" => "Failed get data"],400);
+		}
+	}
+	
 	private function updateURL($idURL, $customURL)
 	{
 		$l = Link::where('idURL', $idURL)->first();

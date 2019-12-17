@@ -47,7 +47,7 @@ $router->group(['prefix' => 'api/v1/'], function () use ($router) {
 		
 		$router->get('/urls', [
 			'as' => 'urls',
-			'uses' => 'UserController@listURL'
+			'uses' => 'ShortYinqController@listURL'
 		]);
 		
 	});
