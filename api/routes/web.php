@@ -50,6 +50,11 @@ $router->group(['prefix' => 'api/v1/'], function () use ($router) {
 			'uses' => 'ShortYinqController@listURL'
 		]);
 		
+		$router->get('/delete/{id}', [
+			'as' => 'delete',
+			'uses' => 'ShortYinqController@deleteURL'
+		]);
+
 	});
 
 });

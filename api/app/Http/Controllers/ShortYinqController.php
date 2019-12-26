@@ -123,4 +123,21 @@ class ShortYinqController extends Controller
 		$link->save();
 	}
 
+	public function deleteURL(Request $req)
+	{
+		$userId = $req->user()->id;
+		$idURL = $req->id;
+
+		try {
+			$l = Link::where(['idURL' => $idURL, 'userId' => $userId]);
+			if(count($l->get()) != 0){
+				$l->delete();
+				return response()->json(["message" => "Success deleted"], 200);
+			}		
+			return response()->json(["message" => "URL Not Found"], 400);
+		} catch (\Throwable $th) {
+			return response()->json(["error" => "Failed to delete data"],500);
+		}
+	}
+	
 }
