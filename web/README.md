@@ -1,2 +1,2 @@
 # Short-yinq
-API
+WEB Version
