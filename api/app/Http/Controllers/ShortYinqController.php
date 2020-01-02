@@ -31,11 +31,16 @@ class ShortYinqController extends Controller
 		}
 	}
 
+	private function uniqueId()
+	{
+		return base_convert(microtime(false), 6, 36);
+	}
+
 	public function automaticShortenerURL(Request $req)
 	{
 		$userId = $req->user();
 		$realURL = $req->input("url");
-		$idURL = base_convert(microtime(false), 6, 36);
+		$idURL = $this->uniqueId();
 		$data = [
 			"userId" => $userId ? $userId->id: NULL,
 			"idURL" => $idURL,
@@ -46,7 +51,7 @@ class ShortYinqController extends Controller
 
 		try {
 			$this->createURL($data);
-			return response()->json(["url" => $this->domain().$idURL],201);		
+			return response()->json(["url" => $this->host().$idURL],201);		
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "Can't create url"],400);		
 		}
@@ -68,14 +73,14 @@ class ShortYinqController extends Controller
 
 		try {
 			$this->updateURL($existIdURL, $customURL);
-			return response()->json(["url" => $this->domain().$customURL],201);		
+			return response()->json(["url" => $this->host().$customURL],201);		
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "Can't create url"],400);		
 		}
 	}
 
 
-	private function domain()
+	private function host()
 	{
 		$hostName = $_SERVER['HTTP_HOST']; 
 		$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
