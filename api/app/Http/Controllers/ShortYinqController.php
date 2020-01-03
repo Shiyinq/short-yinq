@@ -19,6 +19,11 @@ class ShortYinqController extends Controller
 		//
 	}
 
+	private function generateId()
+	{
+		return base_convert(microtime(false), 6, 36);
+	}
+
 	public function redirectLink(Request $req)
 	{
 		$idURL = $req->url;
@@ -31,16 +36,11 @@ class ShortYinqController extends Controller
 		}
 	}
 
-	private function uniqueId()
-	{
-		return base_convert(microtime(false), 6, 36);
-	}
-
 	public function automaticShortenerURL(Request $req)
 	{
 		$userId = $req->user();
 		$realURL = $req->input("url");
-		$idURL = $this->uniqueId();
+		$idURL = $this->generateId();
 		$data = [
 			"userId" => $userId ? $userId->id: NULL,
 			"idURL" => $idURL,
@@ -89,6 +89,11 @@ class ShortYinqController extends Controller
 		return $directURL;
 	}
 
+	private function me($req)
+	{
+		return $req->user();
+	}
+
 	private function countHit($idURL)
 	{
 		$l = Link::where('idURL', $idURL)->first();
@@ -100,7 +105,7 @@ class ShortYinqController extends Controller
 	
 	public function listURL(Request $req)
 	{
-		$userId = $req->user()->id;
+		$userId = $this->me($req)->id;
 
 		try {
 			$urls = Link::where('userId', $userId)->get();
@@ -130,7 +135,7 @@ class ShortYinqController extends Controller
 
 	public function deleteURL(Request $req)
 	{
-		$userId = $req->user()->id;
+		$userId = $this->me($req)->id;
 		$idURL = $req->id;
 
 		try {
