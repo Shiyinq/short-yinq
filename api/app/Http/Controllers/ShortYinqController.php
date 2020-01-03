@@ -38,11 +38,11 @@ class ShortYinqController extends Controller
 
 	public function automaticShortenerURL(Request $req)
 	{
-		$userId = $req->user();
+		$user = $this->me($req);
 		$realURL = $req->input("url");
 		$idURL = $this->generateId();
 		$data = [
-			"userId" => $userId ? $userId->id: NULL,
+			"userId" => $user ? $user->id: NULL,
 			"idURL" => $idURL,
 			"realURL" => $realURL,
 			"hit" => 0,
@@ -66,7 +66,7 @@ class ShortYinqController extends Controller
 			'idURL.unique' => 'The URL has already been taken' 
 		]);
 
-		$userId = $req->user();
+		$userId = $this->me($req);
 		$existIdURL = $req->input("id");
 		$customURL = $req->input("idURL");
 		$realURL = $req->input("url");
