@@ -51,7 +51,7 @@ class UserController extends Controller
       if(!empty($user->password) && password_verify($password, $user->password)) {
         return response()->json(["message" => $this->createToken($username)],200);
       }else {
-        return response()->json(["error" => "Username Or Password Failed"],400);
+        return response()->json(["error" => "Username Or Password wrong"],200);
       }
     } catch (\Throwable $th) {
       return response()->json(["error" => "Login failed"],400);
