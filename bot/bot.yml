@@ -3,6 +3,7 @@ tag: null
 deleted_at: null
 desc: short-yinq-bot
 flows:
+    register: $include(flows/auth/register.yml)
     login: $include(flows/auth/login.yml)
     logout: $include(flows/auth/logout.yml)
     shortener: $include(flows/shortener.yml)

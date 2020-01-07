@@ -1,0 +1,134 @@
+intents:
+  reenter:
+    type: command
+    condition: content == "reenter"
+
+  intent_hit_api:
+    type: command
+    condition: "content == 'hit_api'"
+
+  intent_register:
+    initial: true
+    type: text
+    classifier:
+      nlu: auth
+      match: register
+
+  intent_text:
+    type: text
+  
+states: 
+  state_initial:
+    initial: true
+    transitions:
+      state_ask_username:
+        condition: "intent == 'intent_register'"
+     
+  state_ask_username:
+    action:
+      - name: "act_ask_username"
+    transitions:
+      state_ask_email:
+        condition: "intent == 'intent_text'"
+        mapping:
+          context.username: content
+      state_ask_username:
+        fallback: true
+
+  state_ask_email:
+    action:
+      - name: "act_ask_email"
+    transitions:
+      state_ask_password:
+        condition: "intent == 'intent_text'"
+        mapping:
+          context.email: content
+      state_ask_email:
+        fallback: true
+
+  state_ask_password:
+    action:
+      - name: "act_ask_password"
+    transitions:
+      state_hit_api_register:
+        condition: "intent == 'intent_text'"
+        mapping:
+          context.password: content
+      state_ask_password:
+        fallback: true
+
+  state_hit_api_register:
+    action:
+      - name: act_hit_api_register
+      - name: command
+        options:
+          command: hit_api
+          payload:
+            result: $(result)
+    transitions:
+      state_success:
+        condition: payload.result.message
+      state_error:
+        fallback: true
+  
+  state_success:
+    end: true
+    action:
+      - name: "act_succes_register"
+  
+  state_failed:
+    end: true
+    action:
+      - name: "act_failed_register"
+
+  state_error:
+    end: true
+    action:
+      - name: "act_error_register"
+
+actions:
+  act_hit_api_register:
+    type: api
+    options:
+      method: POST
+      body:
+        username: $(context.username) 
+        password: $(context.password)
+        email: $(context.email)
+      uri: "$(config.urlAPI)/register"
+
+  act_ask_username:
+    type: "text"
+    options:
+      text:
+        - "Username:"
+  
+  act_ask_password:
+    type: "text"
+    options:
+      text:
+        - "Password:"
+  
+  act_ask_email:
+    type: "text"
+    options:
+      text:
+        - "Email:"
+  
+  act_succes_register:
+    type: "text"
+    options:
+      text:
+        - "Register succes.."
+
+  act_failed_register:
+    type: "text"
+    options:
+      text:
+        - "$(payload.result.error)"
+
+  act_error_register:
+    type: "text"
+    options:
+      text:
+        - "Error. Try again.."
