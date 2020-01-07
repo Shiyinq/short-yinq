@@ -30,7 +30,7 @@ states:
         options:
           command: hit_api
           payload:
-            result: $(result.message)
+            result: $(result.url)
     transitions:
       state_shortener:
         condition: payload.result
@@ -53,6 +53,8 @@ actions:
     type: api
     options:
       method: POST
+      headers:
+        Authorization: "Bearer $(data.token)"
       body:
         url: $(attributes.url)
       uri: "$(config.urlAPI)/shortyinq"

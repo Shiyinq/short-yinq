@@ -3,9 +3,11 @@ tag: null
 deleted_at: null
 desc: short-yinq-bot
 flows:
+    login: $include(flows/auth/login.yml)
+    logout: $include(flows/auth/logout.yml)
     shortener: $include(flows/shortener.yml)
     fallback: $include(flows/fallback.yml)
 nlus: $include(nlus.yml)
 config:
-    urlAPI: 'https://b5844bfd.ngrok.io/api/v1'
+    urlAPI: 'https://e86f8fe5.ngrok.io/api/v1'
     maxRecursion: 10

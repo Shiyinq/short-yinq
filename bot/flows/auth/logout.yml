@@ -1,0 +1,28 @@
+intents:
+  intent_logout:
+    initial: true
+    type: text
+    classifier:
+      nlu: auth
+      match: logout
+
+states: 
+  state_initial:
+    initial: true
+    transitions:
+      state_logout:
+        condition: "intent == 'intent_logout'"
+        mapping:
+          data.token: "''"
+
+  state_logout:
+    end: true
+    action:
+      - name: "act_logout"
+
+actions:
+  act_logout:
+    type: "text"
+    options:
+      text:
+        - "Logout success.."

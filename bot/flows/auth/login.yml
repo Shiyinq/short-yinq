@@ -1,0 +1,133 @@
+intents:
+  reenter:
+    type: command
+    condition: content == "reenter"
+
+  intent_hit_api:
+    type: command
+    condition: "content == 'hit_api'"
+
+  intent_login:
+    initial: true
+    type: text
+    classifier:
+      nlu: auth
+      match: login
+
+  intent_text:
+    type: text
+  
+states: 
+  state_initial:
+    initial: true
+    transitions:
+      state_already_login:
+        condition: "intent == 'intent_login' && data.token"
+      state_ask_username:
+        condition: "intent == 'intent_login' && data.token == '' || intent == 'intent_login' && !data.token"
+
+  state_already_login:
+    end: true
+    action:
+      - name: "act_already_login"
+      
+  state_ask_username:
+    action:
+      - name: "act_ask_username"
+    transitions:
+      state_ask_password:
+        condition: "intent == 'intent_text'"
+        mapping:
+          context.username: content
+      state_ask_username:
+        fallback: true
+
+  state_ask_password:
+    action:
+      - name: "act_ask_password"
+    transitions:
+      state_hit_api_login:
+        condition: "intent == 'intent_text'"
+        mapping:
+          context.password: content
+      state_ask_password:
+        fallback: true
+
+  state_hit_api_login:
+    action:
+      - name: act_hit_api_login
+      - name: command
+        options:
+          command: hit_api
+          payload:
+            result: $(result)
+    transitions:
+      state_success:
+        condition: payload.result.message
+        mapping:
+          data.token: payload.result.message.token
+      state_failed:
+        condition: payload.result.error
+      state_error:
+        fallback: true
+  
+  state_success:
+    end: true
+    action:
+      - name: "act_succes_login"
+  
+  state_failed:
+    end: true
+    action:
+      - name: "act_failed_login"
+
+  state_error:
+    end: true
+    action:
+      - name: "act_error_login"
+
+actions:
+  act_hit_api_login:
+    type: api
+    options:
+      method: POST
+      body:
+        username: $(context.username) 
+        password: $(context.password) 
+      uri: "$(config.urlAPI)/login"
+
+  act_ask_username:
+    type: "text"
+    options:
+      text:
+        - "Please input username"
+  
+  act_ask_password:
+    type: "text"
+    options:
+      text:
+        - "Please input password"
+  
+  act_succes_login:
+    type: "text"
+    options:
+      text:
+        - "Login succes.."
+
+  act_failed_login:
+    type: "text"
+    options:
+      text:
+        - "$(payload.result.error)"
+
+  act_error_login:
+    type: "text"
+    options:
+      text:
+        - "Error. Try again.."
+  
+  act_already_login:
+    type: "text"
+    options:
+      text:
+        - "You are currently logged in"

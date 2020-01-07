@@ -6,6 +6,17 @@ nlu:
     output: value
     flatten: true
 
+auth:
+  type: keyword
+  options:
+    keywords:
+      login:
+        - "login"
+      logout:
+        - "logout"
+      register:
+        - "register"
+
 url:
   type: regex
   options:
