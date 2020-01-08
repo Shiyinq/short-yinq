@@ -17,6 +17,18 @@ auth:
       register:
         - "register"
 
+command:
+  type: keyword
+  options:
+    keywords:
+      myshortener:
+        - "my url"
+        - "myurl"
+        - "my shortener"
+        - "myshortener"
+        - "list url"
+        - "listurl"
+
 url:
   type: regex
   options:

@@ -1,0 +1,104 @@
+intents:
+  intent_hit_api:
+    type: command
+    condition: "content == 'hit_api'"
+
+  intent_initial:
+    initial: true
+    type: text
+    classifier:
+      nlu: command
+      match: myshortener
+
+states: 
+  state_initial:
+    initial: true
+    transitions:
+      state_hit_api_listurl:
+        condition: "intent == 'intent_initial' && data.token"
+      state_not_login:
+        condition: "intent == 'intent_initial' && data.token == '' || intent == 'intent_initial' && !data.token"
+
+  state_not_login:
+    end: true
+    action:
+      - name: "act_not_login"
+
+  state_hit_api_listurl:
+    action:
+      - name: act_hit_api_listurl
+      - name: command
+        options:
+          command: hit_api
+          payload:
+            result: $(result)
+    transitions:
+      state_success:
+        condition: payload.result.length > 0
+      state_no_data:
+        condition: payload.result.length == 0
+      state_error:
+        fallback: true
+
+  state_no_data:
+    end: true
+    action:
+      - name: "act_response_zero"
+
+  state_success:
+    end: true
+    action:
+      - name: "act_success"
+      - name: "act_list_url"
+
+  state_error:
+    end: true
+    action:
+      - name: "act_error"
+
+actions:
+  act_hit_api_listurl:
+    type: api
+    options:
+      method: GET
+      headers:
+        Authorization: "Bearer $(data.token)"
+      uri: "$(config.urlAPI)/urls"
+
+  act_not_login:
+    type: "text"
+    options:
+      text:
+        - "Please login first"
+
+  act_response_zero:
+    type: "text"
+    options:
+      text:
+        - "No data, please create one" 
+
+  act_success:
+    type: "text"
+    options:
+      text:
+        - "This is your list shortener"
+
+  act_list_url:
+    type: method
+    method: extract
+
+  act_error:
+    type: "text"
+    options:
+      text:
+        - "Error. Try Again"
+
+methods:
+  extract(ctx): "
+    var results = [];
+    var data = ctx.payload.result;
+    for(var i = 0; i < data.length; i++){
+      results.push({type: 'text',content: 'hit: ' + data[i].countHit+ '\\n' + 'url: ' + data[i].shortener});
+    }
+    return results;  
+  "
