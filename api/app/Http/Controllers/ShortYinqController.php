@@ -108,8 +108,23 @@ class ShortYinqController extends Controller
 		$userId = $this->me($req)->id;
 
 		try {
+			$newDatas = [];
 			$urls = Link::where('userId', $userId)->get();
-			return response()->json($urls);
+			
+			foreach ($urls as $url) {
+				array_push($newDatas,[
+					"id"=> $url->id,
+					"idURL"=> $url->idURL,
+					"shortener" => $this->host().$url->idURL,
+					"realURL"=> $url->realURL,
+					"countHit"=> $url->countHit,
+					"status"=> $url->status,
+					"created_at"=> $url->created_at,
+					"updated_at"=> $url->updated_at
+				]);
+			}
+			
+			return response()->json($newDatas);
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "Failed get data"],400);
 		}
