@@ -6,10 +6,11 @@ flows:
     register: $include(flows/auth/register.yml)
     login: $include(flows/auth/login.yml)
     logout: $include(flows/auth/logout.yml)
+    commands: $include(flows/commands.yml)
     myShortener: $include(flows/myShortener.yml)
     shortener: $include(flows/shortener.yml)
     fallback: $include(flows/fallback.yml)
 nlus: $include(nlus.yml)
 config:
-    urlAPI: 'https://f3488dba.ngrok.io/api/v1'
+    urlAPI: 'https://0c339cf7.ngrok.io/api/v1'
     maxRecursion: 10

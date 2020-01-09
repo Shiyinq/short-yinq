@@ -1,0 +1,26 @@
+intents:
+  intent_initial:
+    initial: true
+    type: text
+    classifier:
+      nlu: command
+      match: listcommand
+
+states: 
+  state_initial:
+    initial: true
+    transitions:
+      state_list_command:
+        condition: "intent == 'intent_initial'"
+
+  state_list_command:
+    end: true
+    action:
+      - name: "act_list_command"
+
+actions:
+  act_list_command:
+    type: "text"
+    options:
+      text:
+        - "List Command\n1. <URL>\n2. myshortener\n3. login\n4. logout\n5. register"

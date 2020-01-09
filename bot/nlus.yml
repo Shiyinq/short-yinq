@@ -28,6 +28,10 @@ command:
         - "myshortener"
         - "list url"
         - "listurl"
+      listcommand:
+        - "list command"
+        - "command"
+        - "help"
 
 url:
   type: regex
