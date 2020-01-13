@@ -1,0 +1,74 @@
+# Test API with REST CLient extension vscode
+
+@hostname = http://127.0.0.1
+@port = 3000
+@host = {{hostname}}:{{port}}
+@prefix = api/v1
+
+
+### ping
+GET {{host}} HTTP/1.1
+
+
+### register
+POST {{host}}/{{prefix}}/register
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "password": "user1",
+  "email": "user1@gmail.com"
+}
+
+
+### login
+# @name login
+POST {{host}}/{{prefix}}/login
+Content-Type: application/json
+
+{
+	"username": "shiyinq",
+	"password": "shiyinq"
+}
+
+
+### shortener
+POST {{host}}/{{prefix}}/shortyinq
+Content-Type: application/json
+
+{
+  "url": "https://google.com/"
+}
+
+
+### shortener with auth
+@authToken = {{login.response.body.$.message.token}}
+POST {{host}}/{{prefix}}/shortyinq
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "url": "https://google.com/"
+}
+
+
+### custom url
+POST {{host}}/{{prefix}}/shortyinq/custom
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "id": "hmi1xx",
+  "idURL": "hmi1xxtest"
+}
+
+
+### list url
+GET {{host}}/{{prefix}}/urls
+Authorization: Bearer {{authToken}}
+
+
+### delete url
+@id = c00bq
+GET {{host}}/{{prefix}}/delete/{{id}}
+Authorization: Bearer {{authToken}}
