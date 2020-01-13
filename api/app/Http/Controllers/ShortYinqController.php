@@ -60,7 +60,6 @@ class ShortYinqController extends Controller
 	public function customShortenerURL(Request $req)
 	{
 		$this->validate($req, [
-			'url' => 'required',
 			'idURL' => 'required|unique:links'
 		],[
 			'idURL.unique' => 'The URL has already been taken' 
@@ -69,7 +68,6 @@ class ShortYinqController extends Controller
 		$userId = $this->me($req);
 		$existIdURL = $req->input("id");
 		$customURL = $req->input("idURL");
-		$realURL = $req->input("url");
 
 		try {
 			$this->updateURL($existIdURL, $customURL);
