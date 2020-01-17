@@ -81,11 +81,6 @@ class UserController extends Controller
 
   }
 
-  public function me(Request $request)
-  {
-    return $request->user();
-  }
-
   public function refresh(Request $request) 
   {
     $user = $request->user();
