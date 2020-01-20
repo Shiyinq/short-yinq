@@ -26,11 +26,11 @@ class ShortYinqController extends Controller
 
 	public function redirectLink(Request $req)
 	{
-		$idURL = $req->url;
+		$urlId = $req->url;
 		
 		try {	
-			$realURL = $this->countHit($idURL);
-			return redirect($realURL);
+			$realUrl = $this->count_hit($urlId);
+			return redirect($realUrl);
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "URL Not Found"],404);	
 		}
@@ -39,19 +39,19 @@ class ShortYinqController extends Controller
 	public function automaticShortenerURL(Request $req)
 	{
 		$user = $this->me($req);
-		$realURL = $req->input("url");
-		$idURL = $this->generateId();
+		$realUrl = $req->input("url");
+		$urlId = $this->generateId();
 		$data = [
-			"userId" => $user ? $user->id: NULL,
-			"idURL" => $idURL,
-			"realURL" => $realURL,
+			"user_id" => $user ? $user->id: NULL,
+			"url_id" => $urlId,
+			"real_url" => $realUrl,
 			"hit" => 0,
 			"status" => NULL
 		];
 
 		try {
 			$this->createURL($data);
-			return response()->json(["url" => $this->host().$idURL],201);		
+			return response()->json(["url" => $this->host().$urlId],201);		
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "Can't create url"],400);		
 		}
@@ -60,17 +60,17 @@ class ShortYinqController extends Controller
 	public function customShortenerURL(Request $req)
 	{
 		$this->validate($req, [
-			'idURL' => 'required|unique:links'
+			'url_id' => 'required|unique:links'
 		],[
-			'idURL.unique' => 'The URL has already been taken' 
+			'url_id.unique' => 'The URL has already been taken' 
 		]);
 
 		$userId = $this->me($req);
-		$existIdURL = $req->input("id");
-		$customURL = $req->input("idURL");
+		$existUrlId = $req->input("id");
+		$customURL = $req->input("url_id");
 
 		try {
-			$this->updateURL($existIdURL, $customURL);
+			$this->updateURL($existUrlId, $customURL);
 			return response()->json(["url" => $this->host().$customURL],201);		
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "Can't create url"],400);		
@@ -92,13 +92,13 @@ class ShortYinqController extends Controller
 		return $req->user();
 	}
 
-	private function countHit($idURL)
+	private function count_hit($urlId)
 	{
-		$l = Link::where('idURL', $idURL)->first();
-		$l->countHit += 1 ;
+		$l = Link::where('url_id', $urlId)->first();
+		$l->count_hit += 1 ;
 		$l->save();
 
-		return $l->realURL;
+		return $l->real_url;
 	}
 	
 	public function listURL(Request $req)
@@ -107,15 +107,15 @@ class ShortYinqController extends Controller
 
 		try {
 			$newDatas = [];
-			$urls = Link::where('userId', $userId)->get();
+			$urls = Link::where('user_id', $userId)->get();
 			
 			foreach ($urls as $url) {
 				array_push($newDatas,[
 					"id"=> $url->id,
-					"idURL"=> $url->idURL,
-					"shortener" => $this->host().$url->idURL,
-					"realURL"=> $url->realURL,
-					"countHit"=> $url->countHit,
+					"url_id"=> $url->url_id,
+					"shortener" => $this->host().$url->url_id,
+					"real_url"=> $url->real_url,
+					"count_hit"=> $url->count_hit,
 					"status"=> $url->status,
 					"created_at"=> $url->created_at,
 					"updated_at"=> $url->updated_at
@@ -128,20 +128,20 @@ class ShortYinqController extends Controller
 		}
 	}
 	
-	private function updateURL($idURL, $customURL)
+	private function updateURL($urlId, $customURL)
 	{
-		$l = Link::where('idURL', $idURL)->first();
-		$l->idURL = $customURL;
+		$l = Link::where('url_id', $urlId)->first();
+		$l->url_id = $customURL;
 		$l->save();
 	}
 
 	private function createURL($data)
 	{
 		$link = new Link;
-		$link->userId = $data["userId"];
-		$link->idURL = $data["idURL"];
-		$link->realURL = $data["realURL"];
-		$link->countHit = $data["hit"];
+		$link->user_id = $data["user_id"];
+		$link->url_id = $data["url_id"];
+		$link->real_url = $data["real_url"];
+		$link->count_hit = $data["hit"];
 		$link->status = $data["status"];
 		$link->save();
 	}
@@ -149,10 +149,10 @@ class ShortYinqController extends Controller
 	public function deleteURL(Request $req)
 	{
 		$userId = $this->me($req)->id;
-		$idURL = $req->id;
+		$urlId = $req->id;
 
 		try {
-			$l = Link::where(['idURL' => $idURL, 'userId' => $userId]);
+			$l = Link::where(['url_id' => $urlId, 'user_id' => $userId]);
 			if(count($l->get()) != 0){
 				$l->delete();
 				return response()->json(["message" => "Success deleted"], 200);
