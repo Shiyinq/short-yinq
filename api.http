@@ -58,8 +58,8 @@ Content-Type: application/json
 Authorization: Bearer {{authToken}}
 
 {
-  "id": "hmi1xx",
-  "idURL": "hmi1xxtest"
+  "id": "2201u7",
+  "url_id": "custom-url"
 }
 
 
@@ -69,6 +69,6 @@ Authorization: Bearer {{authToken}}
 
 
 ### delete url
-@id = c00bq
+@id = 50b1y
 GET {{host}}/{{prefix}}/delete/{{id}} HTTP/1.1
 Authorization: Bearer {{authToken}}
