@@ -24,12 +24,21 @@ class ShortYinqController extends Controller
 		return base_convert(microtime(false), 6, 36);
 	}
 
+	private function host()
+	{
+		$hostName = $_SERVER['HTTP_HOST']; 
+		$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
+		$domain = $protocol.'://'.$hostName."/";
+
+		return $domain;
+	}
+
 	public function redirectLink(Request $req)
 	{
 		$urlId = $req->url;
 		
 		try {	
-			$realUrl = $this->count_hit($urlId);
+			$realUrl = $this->countHit($urlId);
 			return redirect($realUrl);
 		} catch (\Throwable $th) {
 			return response()->json(["error" => "URL Not Found"],404);	
@@ -77,22 +86,12 @@ class ShortYinqController extends Controller
 		}
 	}
 
-
-	private function host()
-	{
-		$hostName = $_SERVER['HTTP_HOST']; 
-		$protocol = strtolower(substr($_SERVER["SERVER_PROTOCOL"],0,5))=='https'?'https':'http';
-		$domain = $protocol.'://'.$hostName."/";
-
-		return $domain;
-	}
-
 	private function me($req)
 	{
 		return $req->user();
 	}
 
-	private function count_hit($urlId)
+	private function countHit($urlId)
 	{
 		$l = Link::where('url_id', $urlId)->first();
 		$l->count_hit += 1 ;
