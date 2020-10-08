@@ -1,2 +1,0 @@
-# Short-yinq
-WEB Version
